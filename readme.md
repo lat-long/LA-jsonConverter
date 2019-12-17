@@ -26,6 +26,7 @@
 ```
 
 ### Usage
-* Download project, then using command line terminal, run `npm start` or `node index.js` from the project root
+* Download project, then using command line terminal, run `npm install` to get setup
+* From then on, you simply need to run `npm start` or `node index.js` from the project root to run the app
 * You'll be prompted for the path to your JSON files, asked if you want to extract an element for conversion and then asked which element to extract.
 * Script will run showing progress and create a `/CSV/` directory containing all your converted files
