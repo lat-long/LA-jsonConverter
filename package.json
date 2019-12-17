@@ -1,0 +1,17 @@
+{
+  "name": "apprise-jsonconverter",
+  "version": "1.0.0",
+  "description": "CLI tool to bulk convert nested JSON files to CSV format",
+  "main": "app.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "author": "Lat Long",
+  "license": "ISC",
+  "devDependencies": {
+    "fs": "0.0.1-security",
+    "inquirer": "^7.0.1",
+    "json-2-csv": "^3.5.7",
+    "path": "^0.12.7"
+  }
+}
