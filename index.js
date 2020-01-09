@@ -42,48 +42,72 @@ inquirer.prompt([
     fs.readdir(answers.filePath, function(err,list){
         if(err) throw err;
 
-        for(var i=0; i<list.length; i++){
-            if(path.extname(list[i])==='.json'){
+        let compiled = [];
+        let currentUserID = "";
 
+        for(let i=0; i<list.length; i++){
+            if(path.extname(list[i])==='.json'){
+                
                 const fileName = list[i];
 
                 //Read contents of each file
-                fs.readFile(answers.filePath+list[i], function(err, contents) {
-                    if (err) throw err;
+                fileData = fs.readFileSync(answers.filePath+list[i], "utf8");
+                
                     
-                    let data = (function(raw){
-                        try {
-                            return JSON.parse(raw);
-                        } catch(e) {
-                            console.log('Error in file '+fileName);
-                            console.log(e);
-                            return false;
-                        }
-                    })(contents);
+                let data = (function(raw){
+                    try {
+                        return JSON.parse(raw);
+                    } catch(e) {
+                        console.log('Error in file '+fileName);
+                        console.log(e);
+                        return false;
+                    }
+                })(fileData);
                     
-                    if(!data)
-                        return;
+                if(!data)
+                    return;
                     
-                    //If we said to extract data from an element within the JSON, pull it out as our data
-                        if(answers.extract && answers.extractField){
-                            data = data[answers.extractField];
-                        }
+                //If we said to extract data from an element within the JSON, pull it out as our data
+                if(answers.extract && answers.extractField){
+                    data = data[answers.extractField];
+                }
 
-                    //Convert data to CSV
-                    converter.json2csv(data,function(err,csv){
-                        if (err) throw err;
-                        saveCSV(csv,fileName,answers.filePath);
-                    });
-                });
 
+                var filteredData = data.map(function(el) {
+                    var o = Object.assign({}, el);
+
+                    //not every entry has a UserID, so keep track of the latest until we encounter another one
+                    if(el && el.User_Info && el.User_Info.UserID)
+                        currentUserID = el.User_Info.UserID;
+                    else    //set the User ID for sub-items so each row has the parent ID
+                        o.User_Info.UserID = currentUserID;
+
+                    //add fileName to data 
+                        o.dataSourceFile = fileName;
+
+                    return o;
+                  });
+
+                //add to our array
+                Array.prototype.push.apply(compiled,filteredData);
+                    
+                   
+             
             } //end extension check
         } //end for loop
+ 
+        //Convert data to CSV
+        converter.json2csv(compiled,function(err,csv){
+            if (err) throw err;
+            
+            saveCSV(csv,'Converted',answers.filePath);
+        });
     });
     
 });
 
 function saveCSV(csvData,fileName,path){
-    
+
     if(!csvData || !fileName)
         return;
         
@@ -93,7 +117,7 @@ function saveCSV(csvData,fileName,path){
         fs.mkdirSync(resultsDir);
 
 
-    fs.appendFile(resultsDir+'/'+fileName+'.csv',csvData, function (err) {
+    fs.appendFile(resultsDir+fileName+'.csv',csvData, function (err) {
         if (err) throw err;
         console.log('Created '+fileName+'.csv');
     });
