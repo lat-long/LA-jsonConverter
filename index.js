@@ -112,12 +112,12 @@ function saveCSV(csvData,fileName,path){
         return;
         
     resultsDir = path+'CSV';
-
+    
     if (!fs.existsSync(resultsDir))
         fs.mkdirSync(resultsDir);
 
 
-    fs.appendFile(resultsDir+fileName+'.csv',csvData, function (err) {
+    fs.appendFile(resultsDir+'/'+fileName+'.csv',csvData, function (err) {
         if (err) throw err;
         console.log('Created '+fileName+'.csv');
     });
