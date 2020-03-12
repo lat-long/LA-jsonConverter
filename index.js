@@ -69,21 +69,30 @@ inquirer.prompt([
                     
                 //If we said to extract data from an element within the JSON, pull it out as our data
                 if(answers.extract && answers.extractField){
-                    data = data[answers.extractField];
+                    originalData = data;
+                    data = originalData[answers.extractField];
                 }
 
 
-                var filteredData = data.map(function(el) {
+                var filteredData = data.map(function(el,index) {
                     var o = Object.assign({}, el);
 
                     //not every entry has a UserID, so keep track of the latest until we encounter another one
-                    if(el && el.User_Info && el.User_Info.UserID)
-                        currentUserID = el.User_Info.UserID;
+                    if(el && el.user_info && el.user_info.alpha_numeric_id)
+                        currentUserID = el.user_info.alpha_numeric_id;
                     else    //set the User ID for sub-items so each row has the parent ID
-                        o.User_Info.UserID = currentUserID;
+                        o.user_info.alpha_numeric_id = currentUserID;
 
                     //add fileName to data 
                         o.dataSourceFile = fileName;
+                    
+                    //add top level data to row
+                        o.schema_version = originalData.schema_version;
+                        o.build_version = originalData.build_version;
+                        o.payload_key = originalData.key;
+                        o.payload_created_at = originalData.created_at;
+                        o.payload_updated_at = originalData.updated_at;
+
 
                     return o;
                   });
