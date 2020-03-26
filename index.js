@@ -78,10 +78,10 @@ inquirer.prompt([
                     var o = Object.assign({}, el);
 
                     //not every entry has a UserID, so keep track of the latest until we encounter another one
-                    if(el && el.user_info && el.user_info.alpha_numeric_id)
-                        currentUserID = el.user_info.alpha_numeric_id;
+                    if(el && el.User_Info && el.User_Info.AlphaNumericID)
+                        currentUserID = el.User_Info.AlphaNumericID;
                     else    //set the User ID for sub-items so each row has the parent ID
-                        o.user_info.alpha_numeric_id = currentUserID;
+                        o.User_Info.AlphaNumericID = currentUserID;
 
                     //add fileName to data 
                         o.dataSourceFile = fileName;
@@ -93,7 +93,7 @@ inquirer.prompt([
                         o.payload_created_at = originalData.created_at;
                         o.payload_updated_at = originalData.updated_at;
 
-
+                        
                     return o;
                   });
 
